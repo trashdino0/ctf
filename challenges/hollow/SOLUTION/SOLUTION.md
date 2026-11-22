@@ -83,7 +83,9 @@ then strip `0x00 0x02 PS 0x00` to get the flag.
   ```
 
 The interval arithmetic above is the whole attack. A solver drives the oracle
-as a black box — it never needs the private key.
+as a black box — it never needs the private key. The published `oracle.jar` is
+that black box: it accepts one hex ciphertext per line, or one as an argument,
+and returns `1` or `0`.
 
 ## 3. Expected cost
 
