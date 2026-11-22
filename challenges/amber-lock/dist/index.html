@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AMBER LOCK // Specimen Archive</title>
+<link rel="icon" href="data:,">
+<style>
+  :root{
+    --bg:#07090a;
+    --panel:#0c1011;
+    --panel-2:#111617;
+    --amber:#ffb000;
+    --amber-soft:#ffcf66;
+    --amber-dim:#8a6200;
+    --line:rgba(255,176,0,.26);
+    --line-soft:rgba(255,176,0,.12);
+    --text:#e9dec4;
+    --muted:#88857a;
+    --red:#ff5b5b;
+    --green:#7dff9b;
+    --uv:#8f76ff;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{
+    background:
+      radial-gradient(1100px 700px at 15% -10%,rgba(255,176,0,.09),transparent 60%),
+      radial-gradient(900px 600px at 95% 0%,rgba(143,118,255,.07),transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--mono);
+    font-size:14px;
+    line-height:1.6;
+    letter-spacing:.01em;
+    padding:0 0 64px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:50;
+    background:repeating-linear-gradient(to bottom,transparent 0 3px,rgba(0,0,0,.16) 3px 4px);
+    opacity:.55;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:49;
+    background:radial-gradient(ellipse at center,transparent 55%,rgba(0,0,0,.55) 100%);
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px;position:relative;z-index:2}
+
+  /* ---------- masthead ---------- */
+  header.mast{
+    border-bottom:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(255,176,0,.05),transparent);
+    padding:26px 0 20px;margin-bottom:26px;
+  }
+  .mast-top{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:14px}
+  .sigil{
+    width:42px;height:42px;border:1px solid var(--amber);display:grid;place-items:center;
+    color:var(--amber);font-size:20px;box-shadow:0 0 18px rgba(255,176,0,.16) inset;
+    clip-path:polygon(0 0,100% 0,100% 72%,72% 100%,0 100%);
+  }
+  h1{
+    margin:0;font-size:clamp(26px,5vw,44px);letter-spacing:.22em;font-weight:700;
+    color:var(--amber-soft);text-shadow:0 0 24px rgba(255,176,0,.25);
+  }
+  .sub{margin:2px 0 0;color:var(--muted);font-size:11px;letter-spacing:.28em;text-transform:uppercase}
+  .status{
+    text-align:right;font-size:11px;letter-spacing:.16em;color:var(--muted);
+    border:1px solid var(--line-soft);padding:10px 14px;background:rgba(0,0,0,.35);
+  }
+  .status b{color:var(--amber-soft);font-weight:600}
+  .led{
+    display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);
+    box-shadow:0 0 10px var(--amber);margin-right:8px;animation:pulse 2.4s infinite;
+  }
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.35}}
+
+  /* ---------- intro strip ---------- */
+  .brief{
+    border-left:2px solid var(--amber);padding:12px 18px;margin-bottom:26px;
+    background:linear-gradient(90deg,rgba(255,176,0,.07),transparent 70%);
+    color:#cfc6ad;font-size:13px;
+  }
+  .brief strong{color:var(--amber-soft)}
+
+  /* ---------- layout ---------- */
+  .grid{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(300px,.85fr);gap:22px;align-items:start}
+  @media(max-width:880px){.grid{grid-template-columns:1fr}}
+
+  .panel{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);padding:20px;
+    clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));
+    margin-bottom:22px;
+  }
+  .panel h2{
+    margin:0 0 4px;font-size:12px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--amber);font-weight:600;
+  }
+  .panel .cap{margin:0 0 18px;color:var(--muted);font-size:11px;letter-spacing:.08em}
+  .rule{height:1px;background:var(--line-soft);margin:16px 0}
+
+  /* progress */
+  .progress{display:flex;gap:6px;margin:4px 0 20px;flex-wrap:wrap}
+  .pip{
+    width:26px;height:6px;background:rgba(255,255,255,.06);border:1px solid var(--line-soft);
+    transition:.25s;
+  }
+  .pip.done{background:var(--amber);border-color:var(--amber);box-shadow:0 0 8px rgba(255,176,0,.4)}
+  .pip.now{border-color:var(--amber);background:rgba(255,176,0,.25)}
+
+  /* gate card */
+  .gate-id{font-size:11px;letter-spacing:.24em;color:var(--uv);text-transform:uppercase}
+  .gate-title{font-size:19px;color:var(--amber-soft);margin:6px 0 12px;letter-spacing:.06em}
+  .clue{
+    font-family:Georgia,"Times New Roman",serif;font-size:16px;line-height:1.75;
+    color:#e6dcc6;border-left:2px solid var(--amber-dim);padding:4px 0 4px 16px;margin:0 0 18px;
+  }
+  .clue em{color:var(--amber-soft)}
+  .answer-row{display:flex;gap:10px;flex-wrap:wrap}
+  input[type=text]{
+    flex:1;min-width:180px;background:#050707;border:1px solid var(--line);
+    color:var(--amber-soft);padding:11px 13px;font:inherit;font-size:14px;outline:none;
+  }
+  input[type=text]:focus{border-color:var(--amber);box-shadow:0 0 0 2px rgba(255,176,0,.12)}
+  input[type=text]::placeholder{color:#5d5a52}
+  button{
+    font:inherit;font-size:12px;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;
+    background:transparent;color:var(--amber);border:1px solid var(--amber);
+    padding:11px 18px;transition:.18s;
+  }
+  button:hover:not(:disabled){background:rgba(255,176,0,.12);box-shadow:0 0 16px rgba(255,176,0,.18)}
+  button:disabled{opacity:.35;cursor:not-allowed}
+  button.ghost{border-color:var(--line);color:var(--muted)}
+  button.ghost:hover{border-color:var(--amber);color:var(--amber);background:rgba(255,176,0,.06)}
+
+  .feedback{min-height:24px;margin-top:14px;font-size:12px;letter-spacing:.06em}
+  .feedback.bad{color:var(--red)}
+  .feedback.good{color:var(--green)}
+
+  details.hint{
+    margin-top:16px;border-top:1px dashed var(--line-soft);padding-top:12px;
+  }
+  details.hint summary{
+    cursor:pointer;color:var(--muted);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+    list-style:none;
+  }
+  details.hint summary::-webkit-details-marker{display:none}
+  details.hint summary::before{content:"[ + ] ";color:var(--amber-dim)}
+  details.hint[open] summary::before{content:"[ − ] "}
+  details.hint p{color:#bdb49c;font-size:12px;margin:10px 0 0;padding-left:18px}
+
+  .teach{
+    display:none;margin-top:16px;padding:14px 16px;border:1px solid rgba(125,255,155,.22);
+    background:rgba(125,255,155,.045);font-size:12.5px;color:#cfe8d4;
+  }
+  .teach.show{display:block;animation:reveal .35s ease both}
+  .teach b{color:var(--green);letter-spacing:.14em;font-size:11px;text-transform:uppercase;display:block;margin-bottom:6px}
+  @keyframes reveal{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+  /* tray */
+  .tray{display:flex;flex-wrap:wrap;gap:8px;min-height:64px;align-content:flex-start}
+  .frag{
+    border:1px solid var(--amber-dim);background:rgba(255,176,0,.07);color:var(--amber-soft);
+    padding:8px 10px;cursor:grab;user-select:none;min-width:64px;text-align:center;
+    animation:reveal .4s ease both;position:relative;
+  }
+  .frag:hover,.frag.sel{border-color:var(--amber);background:rgba(255,176,0,.16);box-shadow:0 0 14px rgba(255,176,0,.22)}
+  .frag.sel{outline:1px dashed var(--amber);outline-offset:2px}
+  .frag .val{font-size:17px;letter-spacing:.06em;display:block}
+  .frag .idx{font-size:9px;color:var(--muted);letter-spacing:.14em;display:block;margin-top:2px}
+  .empty{color:#5d5a52;font-size:11px;font-style:italic}
+
+  /* slots */
+  .slots{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+  @media(max-width:520px){.slots{grid-template-columns:repeat(4,1fr)}}
+  .slot{
+    min-height:56px;border:1px dashed rgba(255,176,0,.3);background:rgba(0,0,0,.3);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;
+    transition:.16s;
+  }
+  .slot:hover{border-color:var(--amber);background:rgba(255,176,0,.06)}
+  .slot .n{font-size:9px;color:var(--muted);letter-spacing:.1em}
+  .slot .v{font-size:15px;color:var(--amber-soft);letter-spacing:.04em;min-height:19px}
+  .slot.filled{border-style:solid;border-color:var(--amber-dim);background:rgba(255,176,0,.08)}
+  .slot.over{background:rgba(255,176,0,.2);border-color:var(--amber)}
+  .decrypt-row{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap;align-items:center}
+  #assembly-msg{font-size:11px;letter-spacing:.08em;color:var(--muted)}
+  #assembly-msg.bad{color:var(--red)}
+
+  /* log */
+  .log{max-height:330px;overflow:auto;padding-right:6px}
+  .log-entry{border-bottom:1px solid var(--line-soft);padding:9px 0;font-size:11.5px;color:#a9a18d}
+  .log-entry b{color:var(--amber-soft);font-weight:600}
+  .log-entry .fi{color:var(--uv)}
+
+  /* success */
+  .vault{
+    display:none;text-align:center;padding:34px 20px;border:1px solid var(--green);
+    background:radial-gradient(circle at 50% 0%,rgba(125,255,155,.12),rgba(0,0,0,.4));
+    margin-bottom:22px;animation:reveal .5s ease both;
+  }
+  .vault.show{display:block}
+  .vault .tag{color:var(--green);letter-spacing:.3em;font-size:11px}
+  .vault .flag{
+    display:inline-block;margin:18px 0 8px;padding:14px 22px;border:1px solid var(--green);
+    color:#dfffe8;font-size:clamp(16px,3.4vw,26px);letter-spacing:.08em;word-break:break-all;
+    box-shadow:0 0 30px rgba(125,255,155,.18);
+  }
+  .vault p{color:#a9c9b2;font-size:12px;margin:0}
+
+  footer{border-top:1px solid var(--line-soft);margin-top:30px;padding-top:16px;color:#66635b;font-size:11px}
+  footer a{color:var(--amber-dim);text-decoration:none;border-bottom:1px dotted var(--amber-dim)}
+  footer a:hover{color:var(--amber);border-bottom-style:solid}
+  .warn{color:var(--red)}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap mast-top">
+    <div class="brand">
+      <div class="sigil" aria-hidden="true">⌬</div>
+      <div>
+        <h1>AMBER LOCK</h1>
+        <p class="sub">Specimen Archive // Field Terminal 04</p>
+      </div>
+    </div>
+    <div class="status">
+      <span class="led" aria-hidden="true"></span><b>SYSTEM ONLINE</b><br>
+      LOCKS SEALED: <b id="sealed">12</b> / 12<br>
+      FRAGMENTS: <b id="frag-count">0</b> / 12
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="brief">
+    <strong>OPERATOR NOTE.</strong> Twelve specimen locks guard the archive index. Each correct
+    ID releases one core-sample fragment — but the tray does not dispense them in reading order.
+    Recover all twelve, then assemble them by their <strong>index codes</strong> in the console.
+    Research terminals are permitted. This is a knowledge lock, not a code-breaking lock.
+  </div>
+
+  <div id="vault" class="vault" role="status">
+    <div class="tag">// ARCHIVE UNLOCKED //</div>
+    <div class="flag" id="final-flag"></div>
+    <p>Twelve specimens. One index. File this under things that never stopped evolving.</p>
+  </div>
+
+  <div class="grid">
+    <section class="panel" aria-labelledby="gate-heading">
+      <h2 id="gate-heading">Specimen Lock</h2>
+      <p class="cap">Identify the specimen described in the field record.</p>
+      <div class="progress" id="progress" aria-label="Lock progress"></div>
+
+      <div id="gate-body">
+        <div class="gate-id" id="gate-id"></div>
+        <div class="gate-title" id="gate-title"></div>
+        <p class="clue" id="clue"></p>
+        <form class="answer-row" id="answer-form" autocomplete="off">
+          <input type="text" id="answer" placeholder="enter genus / term…" aria-label="Your answer">
+          <button type="submit" id="submit">Submit ID</button>
+        </form>
+        <div class="feedback" id="feedback" aria-live="polite"></div>
+
+        <details class="hint" id="hint-box">
+          <summary>Field note / hint</summary>
+          <p id="hint-text"></p>
+        </details>
+
+        <div class="teach" id="teach"><b>Why that is correct</b><span id="teach-text"></span></div>
+        <div class="rule"></div>
+        <button class="ghost" id="continue" style="display:none">Next lock →</button>
+      </div>
+
+      <div id="complete-msg" style="display:none">
+        <p class="clue" style="border-color:var(--green)">
+          All twelve locks are open. Move to the assembly console and arrange the core samples.
+        </p>
+      </div>
+    </section>
+
+    <div>
+      <section class="panel" aria-labelledby="tray-heading">
+        <h2 id="tray-heading">Core Sample Tray</h2>
+        <p class="cap">Fragments arrive scrambled. Each carries its true index code.</p>
+        <div class="tray" id="tray"><span class="empty">no samples recovered</span></div>
+      </section>
+
+      <section class="panel" aria-labelledby="asm-heading">
+        <h2 id="asm-heading">Assembly Console</h2>
+        <p class="cap">Place fragments into slots 01–12 by index. Click a sample then a slot, or drag it.</p>
+        <div class="slots" id="slots"></div>
+        <div class="decrypt-row">
+          <button id="decrypt" disabled>Run decryption</button>
+          <button class="ghost" id="clear">Clear slots</button>
+        </div>
+        <div id="assembly-msg" aria-live="polite"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="log-heading">
+        <h2 id="log-heading">Recovered Records</h2>
+        <p class="cap">Solved locks and their field notes.</p>
+        <div class="log" id="log"><div class="empty">archive empty</div></div>
+      </section>
+    </div>
+  </div>
+
+  <div style="text-align:center;margin-top:8px">
+    <button class="ghost" id="reset">Reset terminal</button>
+  </div>
+
+  <footer>
+    AMBER LOCK is a knowledge challenge — external research is allowed and expected.
+    Stuck? Use the collapsible hints above.
+    <span class="warn">Spoilers:</span>
+    <a href="../SOLUTION/SOLUTION.md">⚠ SOLUTION.md — FULL ANSWER, DO NOT OPEN WHILE SOLVING</a>
+  </footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+
+  const FLAG = "CTF{4mb3r_cl4d3_1nd3x}";
+  const STORE = "amber-lock-v1";
+
+  // The fragments are deliberately handed out in a scrambled order.
+  // `idx` is the fragment's true position in the final index string.
+  const STAGES = [
+    {
+      gate:"Gate 01 // Perimeter", title:"THE THREE-HORNED LOCAL",
+      clue:"Three horns, a bony frill, and a floodplain in Montana at the very end of the Cretaceous. This ceratopsian lived alongside Tyrannosaurus — and roughly sixty-five million years before any human. Genus?",
+      accept:["triceratops","triceratops horridus"], idx:9, frag:"3_",
+      hint:"Greek for “three-horned face.” Named by O. C. Marsh in 1889.",
+      teach:"Triceratops horridus comes from the Late Maastrichtian Hell Creek Formation (~68–66 Ma). It vanished at the K–Pg boundary, so the picnic-table scene with humans is pure fiction."
+    },
+    {
+      gate:"Gate 02 // Fossil Drawer", title:"THE 1861 FEATHER",
+      clue:"A single feather impression from the Solnhofen limestone of Bavaria was given a genus name in 1861. It became the classic proof that birds sit inside the dinosaur tree. Genus?",
+      accept:["archaeopteryx","archaeopteryx lithographica"], idx:2, frag:"TF",
+      hint:"Greek for “ancient wing.” Hermann von Meyer named the feather.",
+      teach:"Archaeopteryx lithographica was named from an isolated feather in 1861. It is a mosaic — teeth, a long bony tail, clawed fingers, and flight feathers — not a simple 'first bird' in a clean linear story."
+    },
+    {
+      gate:"Gate 03 // Bone War Ledger", title:"DIFFERENT LIZARD",
+      clue:"O. C. Marsh named this Morrison Formation predator in 1877 because its vertebrae looked unlike those of any dinosaur then known. The genus name means “different lizard.” Which one?",
+      accept:["allosaurus","allosaurus fragilis"], idx:12, frag:"x}",
+      hint:"allos + sauros. Think 'other' or 'strange' lizard.",
+      teach:"Allosaurus fragilis — Greek allos ('different/strange') plus sauros ('lizard'). It was the dominant large theropod of the Late Jurassic Morrison Formation, long before T. rex existed."
+    },
+    {
+      gate:"Gate 04 // Southern Manifest", title:"THE TITAN'S ADDRESS",
+      clue:"Argentinosaurus huinculensis was excavated from an Argentine rock unit that also produced the giant predator Mapusaurus. Name the formation.",
+      accept:["huincul","huincul formation"], idx:5, frag:"b3",
+      hint:"It is sitting right there in the species epithet: huinculensis.",
+      teach:"The Huincul Formation of Neuquén Province, Argentina (roughly Albian–Cenomanian) yielded both Argentinosaurus and Mapusaurus. Giant sauropods are frequently named for the formation and region that produced them."
+    },
+    {
+      gate:"Gate 05 // Lagoon Tank", title:"NOT A DINOSAUR",
+      clue:"The giant marine reptile of the Late Cretaceous was a squamate — closer to living lizards and snakes than to any dinosaur. Which genus stars as the park's aquatic headline act?",
+      accept:["mosasaurus","mosasaurus hoffmannii"], idx:1, frag:"C",
+      hint:"Named after the Meuse river (Mosa in Latin). It ends in -saurus.",
+      teach:"Mosasaurus hoffmannii lived about 71–66 Ma and was a marine squamate, not a dinosaur. So the 'sea monster' was never part of Dinosauria at all — a useful correction to the movie."
+    },
+    {
+      gate:"Gate 06 // Visitor Archive", title:"WHO SIGNED THE NAME",
+      clue:"Barnum Brown collected the specimens in Montana; the animal was discovered in 1902 but formally named in 1905. Who wrote the formal description of Tyrannosaurus rex?",
+      accept:["osborn","henry fairfield osborn","h f osborn","henry osborn"], idx:8, frag:"4d",
+      hint:"President of the American Museum of Natural History. Three initials: H. F. O.",
+      teach:"Henry Fairfield Osborn named Tyrannosaurus rex in 1905. The name is Greek tyrannos ('tyrant') + sauros ('lizard') with Latin rex ('king') — the 'king' is a rhetorical flourish, not a taxonomic rank."
+    },
+    {
+      gate:"Gate 07 // Raptor Paddock", title:"BUMPS ON THE ULNA",
+      clue:"In 2007, researchers found attachment bumps on the forearm of Velociraptor proving it carried large, branched feathers. What are those bumps called?",
+      accept:["quill knobs","ulnar papillae","ulnar papilla","quill knob"], idx:4, frag:"4m",
+      hint:"Also called ulnar papillae — little points where feather quills anchor to bone.",
+      teach:"Turner, Makovicky and Norell described ulnar papillae on Velociraptor mongoliensis in Science (2007). The featherless, scaly 'raptors' of 1993 are outdated; Velociraptor itself was only turkey-sized."
+    },
+    {
+      gate:"Gate 08 // Phylogeny Lab", title:"THE BRANCH NEVER LEFT",
+      clue:"Birds did not 'turn into' dinosaurs and then stop being them. They are living members of which theropod clade — the 'hand snatchers' that also includes dromaeosaurs and troodontids?",
+      accept:["maniraptora","maniraptorans","maniraptoran","maniraptor"], idx:11, frag:"d3",
+      hint:"Literally 'hand robbers.' A coelurosaurian clade inside Theropoda.",
+      teach:"Birds are nested inside Maniraptora, so the avian line never left Dinosauria. A pigeon is a living dinosaur; the 'birds evolved from dinosaurs' phrasing is a shorthand for a branching tree, not a transformation."
+    },
+    {
+      gate:"Gate 09 // Canopy Sample", title:"DISPLAY FEATHER",
+      clue:"A pigeon-sized scansoriopterygid from the Late Jurassic of China was named for its spectacular ornamental tail feathers. Its genus name means “display feather.” Which one?",
+      accept:["epidexipteryx","epidexipteryx hui"], idx:6, frag:"r_",
+      hint:"epi + dex + pteryx. The species honours the late Chinese palaeontologist Hu Yaoming.",
+      teach:"Epidexipteryx hui (2008) comes from the Daohugou beds of Inner Mongolia and means 'Hu's display feather.' Its ornate feathers probably served display, suggesting decoration evolved before powered flight."
+    },
+    {
+      gate:"Gate 10 // Cretaceous Archive", title:"THE EXCEPTIONAL BED",
+      clue:"Which Early Cretaceous Chinese Lagerstätte preserves Sinosauropteryx with its filaments, plus Confuciusornis and a whole feathered fauna in extraordinary detail?",
+      accept:["jehol","jehol biota","jehol biota lagerstatte","jehol biota lagerstätte"], idx:3, frag:"{",
+      hint:"Northeastern China, Liaoning Province. The Yixian and Jiufotang formations.",
+      teach:"The Jehol Biota (~125–120 Ma) is famous for exceptionally preserved fossils, including Sinosauropteryx's simple filaments and even fossilized colour patterns. Exceptional fossil beds shape what we think we know."
+    },
+    {
+      gate:"Gate 11 // Nomenclature Desk", title:"A NAME ON THIN ICE",
+      clue:"A scientific name founded on fossil material that lacks unique diagnostic features — so it cannot be reliably told apart from other taxa — is called what? Give the Latin phrase.",
+      accept:["nomen dubium","nomina dubia"], idx:10, frag:"1n",
+      hint:"Latin for 'dubious name.' The plural is nomina dubia.",
+      teach:"A nomen dubium is a 'dubious name.' Paleontology is provisional: holotypes get re-studied, names get synonymized or abandoned as better material turns up. Not every named genus survives."
+    },
+    {
+      gate:"Gate 12 // Final Vault", title:"THE PLATYPUS DINOSAUR",
+      clue:"A Chilean theropod described in 2015 mixes theropod and ornithischian-like traits. Its species name honours the seven-year-old who first found the fossils in 2004. Genus?",
+      accept:["chilesaurus","chilesaurus diegosuarezi"], idx:7, frag:"cl",
+      hint:"Chile + sauros. The child's surname is in the species epithet: diegosuarezi.",
+      teach:"Chilesaurus diegosuarezi was named in 2015; Diego Suárez found the remains at age seven. Its odd blend of features has kept its placement contested — the 'platypus dinosaur' is a reminder that classification is always being revised."
+    }
+  ];
+
+  const $ = id => document.getElementById(id);
+  let solved = new Set();
+  let placed = Array(12).fill(null);   // slot position -> fragment index (1..12)
+  let selected = null;
+  let current = 0;
+
+  function load(){
+    try{
+      const raw = localStorage.getItem(STORE);
+      if(!raw) return;
+      const s = JSON.parse(raw);
+      if(Array.isArray(s.solved)) solved = new Set(s.solved.filter(i=>i>=0&&i<STAGES.length));
+      if(Array.isArray(s.placed)&&s.placed.length===12) placed = s.placed;
+    }catch(e){/* ignore corrupt state */}
+  }
+  function save(){
+    try{ localStorage.setItem(STORE,JSON.stringify({solved:[...solved],placed})); }catch(e){}
+  }
+
+  function norm(s){ return String(s).toLowerCase().replace(/[^a-z0-9]+/g," ").trim().replace(/\s+/g," "); }
+
+  function renderProgress(){
+    const p = $("progress"); p.innerHTML="";
+    STAGES.forEach((_,i)=>{
+      const d=document.createElement("span");
+      d.className="pip"+(solved.has(i)?" done":(i===current&&solved.size<STAGES.length?" now":""));
+      p.appendChild(d);
+    });
+    $("sealed").textContent = String(STAGES.length-solved.size).padStart(2,"0");
+    $("frag-count").textContent = String(solved.size).padStart(2,"0");
+  }
+
+  function renderGate(){
+    const done = solved.size===STAGES.length;
+    $("gate-body").style.display = done ? "none" : "block";
+    $("complete-msg").style.display = done ? "block" : "none";
+    if(done){ renderProgress(); return; }
+
+    // first unsolved stage
+    current = STAGES.findIndex((_,i)=>!solved.has(i));
+    if(current<0){ renderGate(); return; }
+    const st = STAGES[current];
+    $("gate-id").textContent = st.gate;
+    $("gate-title").textContent = st.title;
+    $("clue").innerHTML = st.clue.replace(/\*([^*]+)\*/g,"<em>$1</em>");
+    $("hint-text").textContent = st.hint;
+    $("hint-box").open = false;
+    $("teach").classList.remove("show");
+    $("continue").style.display="none";
+    $("feedback").textContent="";
+    $("answer").value="";
+    $("answer").disabled=false;
+    $("submit").disabled=false;
+    renderProgress();
+  }
+
+  function fragmentByIndex(idx){
+    const st = STAGES.find(s=>s.idx===idx);
+    return st ? {idx:st.idx,val:st.frag} : null;
+  }
+  function isPlaced(idx){ return placed.includes(idx); }
+
+  function renderTray(){
+    const tray=$("tray"); tray.innerHTML="";
+    // Display in the order the locks were opened, NOT by index — the tray
+    // must stay scrambled so the player has to assemble the pieces.
+    const earned=[...solved].map(i=>STAGES[i].idx).filter(idx=>!isPlaced(idx));
+    if(!earned.length){
+      const e=document.createElement("span");e.className="empty";e.textContent="no samples recovered";
+      tray.appendChild(e);
+    }
+    earned.forEach(idx=>{
+      const f=fragmentByIndex(idx);
+      const el=document.createElement("div");
+      el.className="frag"+(selected===idx?" sel":"");
+      el.draggable=true; el.dataset.idx=String(idx);
+      el.innerHTML='<span class="val"></span><span class="idx">IDX '+String(idx).padStart(2,"0")+'</span>';
+      el.querySelector(".val").textContent=f.val;
+      el.addEventListener("click",()=>{ selected = selected===idx?null:idx; renderTray(); });
+      el.addEventListener("dragstart",ev=>{ selected=idx; ev.dataTransfer.setData("text/plain",String(idx)); ev.dataTransfer.effectAllowed="move"; });
+      tray.appendChild(el);
+    });
+  }
+
+  function renderSlots(){
+    const host=$("slots"); host.innerHTML="";
+    for(let pos=0;pos<12;pos++){
+      const idx=placed[pos];
+      const el=document.createElement("div");
+      el.className="slot"+(idx!==null?" filled":"");
+      el.dataset.pos=String(pos);
+      el.innerHTML='<span class="n">'+String(pos+1).padStart(2,"0")+'</span><span class="v"></span>';
+      if(idx!==null) el.querySelector(".v").textContent=fragmentByIndex(idx).val;
+      el.addEventListener("click",()=>{
+        if(placed[pos]!==null){ placed[pos]=null; renderSlots(); renderTray(); save(); }
+        else if(selected!==null){ placed[pos]=selected; selected=null; renderSlots(); renderTray(); save(); }
+      });
+      el.addEventListener("dragover",ev=>{ev.preventDefault();el.classList.add("over");});
+      el.addEventListener("dragleave",()=>el.classList.remove("over"));
+      el.addEventListener("drop",ev=>{
+        ev.preventDefault();el.classList.remove("over");
+        const idx=Number(ev.dataTransfer.getData("text/plain"));
+        if(idx>=1&&idx<=12&&!isPlaced(idx)){ placed[pos]=idx; selected=null; renderSlots(); renderTray(); save(); }
+      });
+      host.appendChild(el);
+    }
+    const full=placed.every(x=>x!==null);
+    $("decrypt").disabled=!full;
+    $("clear").disabled=!placed.some(x=>x!==null);
+  }
+
+  function renderLog(){
+    const log=$("log"); log.innerHTML="";
+    if(!solved.size){const e=document.createElement("div");e.className="empty";e.textContent="archive empty";log.appendChild(e);return;}
+    [...solved].sort((a,b)=>a-b).forEach(i=>{
+      const st=STAGES[i];
+      const d=document.createElement("div");d.className="log-entry";
+      d.innerHTML='<b>'+st.gate.replace("Gate ","G")+'</b> — '+st.title+' <span class="fi">['+st.frag+' → '+String(st.idx).padStart(2,"0")+']</span>';
+      log.appendChild(d);
+    });
+  }
+
+  function renderAll(){ renderGate(); renderTray(); renderSlots(); renderLog(); }
+
+  $("answer-form").addEventListener("submit",ev=>{
+    ev.preventDefault();
+    const val=norm($("answer").value);
+    if(!val) return;
+    const st=STAGES[current];
+    if(st.accept.some(a=>norm(a)===val)){
+      solved.add(current);
+      $("feedback").className="feedback good";
+      $("feedback").textContent="SPECIMEN CONFIRMED — CORE SAMPLE RELEASED: "+st.frag+" (INDEX "+String(st.idx).padStart(2,"0")+")";
+      $("teach-text").textContent=st.teach;
+      $("teach").classList.add("show");
+      $("answer").disabled=true; $("submit").disabled=true;
+      $("continue").style.display="inline-block";
+      save(); renderProgress(); renderTray(); renderLog();
+    }else{
+      $("feedback").className="feedback bad";
+      $("feedback").textContent="ID REJECTED. Cross-check the field record and try again.";
+    }
+  });
+
+  $("continue").addEventListener("click",()=>{ renderGate(); $("answer").focus(); });
+
+  $("decrypt").addEventListener("click",()=>{
+    const assembly=placed.map((idx,pos)=>fragmentByIndex(idx)&&fragmentByIndex(idx).val).join("");
+    const msg=$("assembly-msg");
+    if(assembly===FLAG){
+      msg.className=""; msg.textContent="DECRYPTION SUCCESSFUL.";
+      $("final-flag").textContent=FLAG;
+      $("vault").classList.add("show");
+      $("vault").scrollIntoView({behavior:"smooth",block:"center"});
+    }else{
+      msg.className="bad"; msg.textContent="ASSEMBLY MISMATCH — verify index order and retry.";
+    }
+  });
+
+  $("clear").addEventListener("click",()=>{ placed=Array(12).fill(null);selected=null;renderSlots();renderTray();save();$("assembly-msg").textContent=""; });
+
+  $("reset").addEventListener("click",()=>{
+    if(!confirm("Reset all 12 locks and fragments? This cannot be undone.")) return;
+    solved=new Set(); placed=Array(12).fill(null); selected=null; current=0;
+    $("vault").classList.remove("show"); $("assembly-msg").textContent="";
+    save(); renderAll();
+  });
+
+  load(); renderAll();
+})();
+</script>
+</body>
+</html>

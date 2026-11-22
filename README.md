@@ -22,6 +22,8 @@ private/                  author-only, gitignored — never commit this
 | --- | --- | --- | --- | --- | --- |
 | Vault | Reverse | Advanced | [`dist/`](challenges/vault/dist/) | [`HINTS.md`](challenges/vault/hints/HINTS.md) | ⚠️ [`SOLUTION.md`](challenges/vault/SOLUTION/SOLUTION.md) |
 | Hollow | Crypto | Hard | [`dist/`](challenges/hollow/dist/) | [`HINTS.md`](challenges/hollow/hints/HINTS.md) | ⚠️ [`SOLUTION.md`](challenges/hollow/SOLUTION/SOLUTION.md) |
+| Casket | Reverse / Java | Hard | [`dist/`](challenges/casket/dist/) | [`HINTS.md`](challenges/casket/hints/HINTS.md) | ⚠️ [`SOLUTION.md`](challenges/casket/SOLUTION/SOLUTION.md) |
+| Amber Lock | Knowledge / Paleontology | Medium → niche | [`dist/`](challenges/amber-lock/dist/) | [`HINTS.md`](challenges/amber-lock/hints/HINTS.md) | ⚠️ [`SOLUTION.md`](challenges/amber-lock/SOLUTION/SOLUTION.md) |
 
 ## Spoiler policy
 
@@ -35,4 +37,4 @@ private/                  author-only, gitignored — never commit this
 Everything under `private/` is excluded by [`.gitignore`](.gitignore). That
 includes `vault.c`, `vm_data.h`, the Hollow RSA private key, the reference
 solvers, and the verification scripts. Keep it local — committing it to a public
-repo would spoil both challenges.
+repo would spoil the challenges.
