@@ -280,16 +280,15 @@ VM chains on the transformed output, not on the input.
 
 ---
 
-## 9. Automated solver
+## 9. Automated solving
 
-`tools/solve.py` does the whole job from the raw PE. It finds the blob by
-sentinel, decrypts it, disassembles the 25 instructions, and **extracts the
-parameters from the bytecode itself** (the `LDI R2, imm` for the IV, the two
+A solver can do the whole job from the raw PE. It finds the blob by sentinel,
+decrypts it, disassembles the 25 instructions, and **extracts the parameters
+from the bytecode itself** (the `LDI R2, imm` for the IV, the two
 `MULI`/`ADDI`/`XORI` triples for the key schedules, and the `ROL` amount) rather
-than hardcoding them:
+than hardcoding them. Example output:
 
 ```text
-$ python tools/solve.py
 [+] blob found at file offset 0x3580
 [+] VM program (100 bytes) decrypted
 [+] expected ciphertext: DCBC7C25FA6887E51FD5ABB01118C192E02E54596BF74559
@@ -318,15 +317,15 @@ Enter the access key: ACCESS GRANTED.
 Flag: CTF{vm_r3v3rs1ng_1s_fun}
 ```
 
-`python tests/verify.py` runs this check along with negative cases and the
-solver round-trip.
+Feeding the recovered key back through the binary is the final sanity check.
+A verification harness can also run negative cases and a solver round-trip.
 
 ---
 
 ## 11. Notes for challenge authors
 
-- To change the answer, edit `FLAG` in `tools/gen_data.py` (it must be 24 bytes),
-  then run `python tools/gen_data.py` and rebuild with `src/build.ps1`. The
+- To change the answer, update the generator's `FLAG` constant (it must be
+  24 bytes), regenerate the encrypted blob, and rebuild the binary. The
   expected ciphertext and blob are regenerated automatically.
 - The anti-debug IV flip is intentionally a *wrong answer* trap rather than a
   crash: a crash tells the player immediately that they found something, while

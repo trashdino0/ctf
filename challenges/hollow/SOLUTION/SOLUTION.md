@@ -82,20 +82,14 @@ then strip `0x00 0x02 PS 0x00` to get the flag.
   ceil((2B + r·n)/b) <= s <= floor((3B + r·n)/a)
   ```
 
-`tools/solve.py` implements exactly this. It talks to the oracle over a
-subprocess pipe, never reading `author/secret.json`.
+The interval arithmetic above is the whole attack. A solver drives the oracle
+as a black box — it never needs the private key.
 
-## 3. Running it
+## 3. Expected cost
 
-```powershell
-python tests\verify.py
-python tools\solve.py
-```
-
-The solver prints progress (`queries`, interval count, total interval width)
-to stderr. The shipped key takes about **42,000 oracle calls** and finishes in
-~20 seconds. `e = 3` is deliberate: it makes the `pow(s, e, n)` in each query
-cheap, so the attack finishes in seconds instead of minutes.
+The shipped key takes about **42,000 oracle calls** and finishes in ~20 seconds.
+`e = 3` is deliberate: it makes the modular exponentiation in each query cheap,
+so the attack finishes in seconds instead of minutes.
 
 ## 4. Why this was avoidable
 
