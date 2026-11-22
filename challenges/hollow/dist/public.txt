@@ -1,0 +1,3 @@
+# Hollow public key
+modulus (hex) = 9ef2b2d9f3b9850f40ef54024cdbd29f0fa49ee34f6ba93dfe291867b3eb7763823cec18fc560813dd30c97cb9ee56d15b2c8ac38af29530693e5c9665a80285
+exponent = 3

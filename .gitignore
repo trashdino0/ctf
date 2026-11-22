@@ -1,0 +1,9 @@
+# Author-only material. This repo is public — never commit these.
+private/
+
+# OS / editor / Python noise
+.DS_Store
+Thumbs.db
+*.pyc
+__pycache__/
+.venv/
